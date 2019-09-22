@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="js/cytoscape.min.js"></script>
+        <link href="css/mbvkg.css" rel="stylesheet">
+    </head>
+    <body>
+      <div id="graphcanvas"> </div>
+      <div id="sparqlresult">
+        <h2>From which music artists would you like to start?</h2>
+        <p>Insert the name please</p>
+        <input v-model="artistName">
+        <button v-on:click="loadArtistsSimilarByNameData">Load similarilly named artists</button>
+      <div v-if="artistList.length > 0">
+          <h2>Groups or artists with a name similar to {{ artistName }}</h2>
+            <mb-artist v-on:select-artist="select_artist"
+              v-for="item in artistList" v-bind:key="item.uri"
+              v-bind:artist="item"
+            ></mb-artist>
+      </div>
+    </div>
+    </body>
+    <script src="js/query_templates.js" type="text/javascript"></script>
+    <script src="js/sparql_response_handlers.js" type="text/javascript"></script>
+    <script src="js/utils.js" type="text/javascript"></script>
+    <script src="js/graphcanvas.js" type="text/javascript"></script>
+
+    <script>
+
+var sparqlEndPoint = 'http://127.0.0.1:8080/sparql';
+var musicGraph;
+var musicGraphConnector;
+
+// init the graph
+document.addEventListener('DOMContentLoaded', function() {
+    let cy = window.cy = cytoscape(getInitGraphData());
+    musicGraph = new MusicGraphData();
+    musicGraph.cy = cy;
+    musicGraphConnector = new MusicGraphSparqlConnector();
+    musicGraphConnector.musicGraphData = musicGraph;
+
+    musicGraph.cy.on('click', 'node', function(evt){
+        var node = evt.target;
+        console.log( 'clicked ' + node.id());
+        musicGraphConnector.loadNodeNeighbors(node.id());
+    });
+});
+
+Vue.component('mb-artist', {
+  props: ['artist'],
+  template: '<button v-on:click="$emit(\'select-artist\', artist.uri)" v-bind:class="/MusicGroup/.test(artist.type)?\'musicgroup\':\'soloartist\'">{{ artist.name }} ({{/MusicGroup/.test(artist.type)?\'group\':\'solo artist\'}})</button>'
+})
+
+var MbApp = new Vue({
+  el: '#sparqlresult',
+  data: {
+    artistName: null,
+    artist: {},
+    artistList: [],
+    artistFocused: null,
+  },
+  methods: {
+    select_artist: function(uri) {
+        if (!uri) {
+            console.log("in method select_artist: uri not set");
+            return;
+        }
+        let hotItem = findInListByField(this.artistList, 'uri', uri);
+        if (hotItem !== null) {
+            this.artistName = this.artistList[hotItem]['name'];
+            this.artist = this.artistList[hotItem];
+        } else {
+            console.log("Could not find an array with key 'uri' and with value " + uri + " in data array artistList");
+        }
+
+        let artistType = musicGraph.nodeType(this.artist.type);
+        // add node to graph
+        console.log(this.artist);
+        let startingNode = this.artist;
+        startingNode['id'] = uri;
+        startingNode['label'] = this.artist['name'];
+
+        // this is the first node of the graph
+        musicGraph.clear();
+        musicGraph.add(startingNode, {});
+    },
+
+    loadArtistsSimilarByNameData: function() {
+
+        if (!this.artistName) {
+          console.log("no artistName to query");
+          return;
+        }
+
+        this.membersList = [];
+
+        var params = new URLSearchParams();
+        let similarGroupsQuery = queryArtistsByNameTpl.replace("$artistName", this.artistName);
+        params.append('query', similarGroupsQuery);
+
+        let getArtistsHandler = sparqlResponseHandler(this, 'artistList');
+        axios.post(sparqlEndPoint, params).then(getArtistsHandler);
+    }
+  }
+})
+    </script>
+</html>

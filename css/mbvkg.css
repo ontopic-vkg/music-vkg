@@ -1,0 +1,36 @@
+#graphcanvas {
+    width: 1000px;
+    height: 600px;
+    background-color: #c0c0c0;
+    display: block;
+  }
+
+#group-members {
+    list-style-type: none;
+}
+
+#similar-artists  {
+    list-style-type: none;
+}
+
+button {
+    border: none;
+    border-radius: 2px;
+    text-align: center;
+    font-size: 16px;
+    margin: 3px;
+    padding: 3px;
+    background-color:lightslategray;
+}
+
+#group-members button {
+    background-color: orange;
+}
+
+#similar-artists button {
+    background-color: cadetblue;
+}
+
+#similar-artists button .musicgroup {
+    background-color: olivedrab;
+}
