@@ -95,8 +95,6 @@ var MbApp = new Vue({
           return;
         }
 
-        this.membersList = [];
-
         var params = new URLSearchParams();
         let similarGroupsQuery = queryArtistsByNameTpl.replace("$artistName", this.artistName);
         params.append('query', similarGroupsQuery);
