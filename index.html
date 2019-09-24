@@ -11,7 +11,7 @@
           <h2>From which music artists would you like to start?</h2>
           <p>Insert the name please</p>
           <input v-model="artistName">
-          <button v-on:click="loadArtistsSimilarByNameData">Load similarilly named artists</button>
+          <button v-on:click="loadArtistsSimilarByNameData" :disabled="artistName==''">Load similarilly named artists</button>
           <div v-if="artistList.length > 0">
               <h2>Groups or artists with a name similar to {{ artistName }}</h2>
                   <mb-artist v-on:select-artist="select_artist"
@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     musicGraph.cy.on('click', 'node', function(evt){
         var node = evt.target;
-        console.log( 'clicked ' + node.id());
         musicGraphConnector.loadNodeNeighbors(node.id());
     });
 });
@@ -69,7 +68,7 @@ var MbApp = new Vue({
   methods: {
     select_artist: function(uri) {
         if (!uri) {
-            console.log("in method select_artist: uri not set");
+            throw "in method select_artist: uri not set";
             return;
         }
         let hotItem = findInListByField(this.artistList, 'uri', uri);
@@ -77,12 +76,11 @@ var MbApp = new Vue({
             this.artistName = this.artistList[hotItem]['name'];
             this.artist = this.artistList[hotItem];
         } else {
-            console.log("Could not find an array with key 'uri' and with value " + uri + " in data array artistList");
+            throw "Could not find an array with key 'uri' and with value " + uri + " in data array artistList";
         }
 
         let artistType = musicGraph.nodeType(this.artist.type);
         // add node to graph
-        console.log(this.artist);
         let startingNode = this.artist;
         startingNode['id'] = uri;
         startingNode['label'] = this.artist['name'];
