@@ -40,7 +40,7 @@ class MusicGraphData {
             this.cy.remove( collection );
             // this.cy.remove();
         } else {
-            throw "error: cy not attached";
+            throw "error: cy not atached";
         }
     }
 
@@ -139,7 +139,7 @@ getInitGraphData = function(){
             // all nodes
             selector: 'node',
             style: {
-              'background-color': '#666',
+              'background-color': '#999',
               'label': 'data(label)',
               'shape': 'rectangle',
               'width': 'label',
@@ -154,19 +154,24 @@ getInitGraphData = function(){
           {
             selector: 'node[type="group"]',
             style: {
-              'background-color': '#484',
+              'background-color': '#8F8',
             }
           },
           {
             selector: 'edge',
             style: {
               'width': 2,
-              'line-color': '#ccc',
-              'target-arrow-color': '#ccc',
-              'target-arrow-shape': 'triangle',
+              'line-color': '#fcc',
+              'curve-style': 'bezier',
+              'target-arrow-color': '#fcc',
+              'target-arrow-shape': 'vee',
               'label': 'data(label)',
-              'target-arrow-shape': 'triangle',
-              'font-size': '12px'
+              'font-size': '12px',
+              'text-rotation': 'autorotate',
+              'target-endpoint': 'outside-to-node-or-label',
+              'source-endpoint': 'outside-to-node-or-label',
+              'source-distance-from-node': '5px',
+              'target-distance-from-node': '5px'
             }
           }
         ],
