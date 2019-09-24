@@ -43,14 +43,12 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
                     throw "no valid id was found as key '" + idKey + "'";
                 } else {
                     if (!('id' in record)) {
-                        console.log("set id");
                         record['id'] = id;
                     } else {
                         console.log("id already set");
                     }
                     if (!('type' in record) && ('type_hint' in options)) {
                         record['type'] = options['type_hint'];
-                        console.log("type_hint used");
                     }                    
                     console.log(record);
                     data[id] = record;
