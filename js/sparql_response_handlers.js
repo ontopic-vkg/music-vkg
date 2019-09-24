@@ -21,11 +21,12 @@ function sparqlResponseHandler(currentObj, currList) {
 
 function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options) {
     return function(response) {
-        console.log(sparqlResponseHandlerCallback);
+        if (options.launched_at) {
+            console.log("query finished executing, elapsed time (ms): " + String(Date.now() - options.launched_at));
+        }
         const rows = response.data.results.bindings;
         let data = {};
         if (rows.length > 0) {
-            console.log("rows");
             rows.forEach(function(item, index){
                 var record = {};
                 var id = null;
@@ -39,7 +40,7 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
                     }
                 }
                 if (id === null) {
-                    console.log("no valid id was found as key '" + idKey + "'");
+                    throw "no valid id was found as key '" + idKey + "'";
                 } else {
                     if (!('id' in record)) {
                         console.log("set id");
@@ -57,8 +58,14 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
 
                 musicGraphData.add(record, attachTo);
             });
-            // start to layout the data
+            if (options.launched_at) {
+                console.log("data added to graph, elapsed time (ms): " + String(Date.now() - options.launched_at));
+            }
+                // start to layout the data
             musicGraphData.layout();
+            if (options.launched_at) {
+                console.log("layouting graph finished, elapsed time (ms): " + String(Date.now() - options.launched_at));
+            }
         } else {
             console.log("no data from SPARQL end point");
         }
