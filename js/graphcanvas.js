@@ -4,12 +4,14 @@ const MusicArtistTypes = {
     SOLO_ARTIST: "solo_artist"
 }
 
-function MusicGraphData () {
-    this.cy = null;
-    this.nodes = {};
-    this.edges = [];
+class MusicGraphData {
+    constructor (){
+        this.cy = null;
+        this.nodes = {};
+        this.edges = [];
+    }
 
-    this.nodeType = function(typeFromSparql) {
+    nodeType(typeFromSparql) {
         if (typeFromSparql === null) {
             throw "argument must not be null";
         }
@@ -28,7 +30,7 @@ function MusicGraphData () {
     }
 
     // clear data when starting over
-    this.clear = function() {
+    clear() {
         this.nodes = {};
         this.edges = []; 
         if (this.cy) {
@@ -43,7 +45,7 @@ function MusicGraphData () {
     }
 
     // 
-    this.add = function(record, attachTo) {
+    add(record, attachTo) {
         let canvasDataList = [];
         console.log(attachTo);
         let id = record['id'];
@@ -94,45 +96,48 @@ function MusicGraphData () {
         }
     }
 
-    this.layout = function() {
+    layout() {
         var layout = this.cy.layout({ name: 'cose' });
         layout.run();
     }
 }
 
-function MusicGraphSparqlConnector() {
-  this.musicGraphData = null;
-
-  this.loadNodeNeighbors = function(id) {
-    if (!id) {
-        throw "no valid id found";
+class MusicGraphSparqlConnector {
+    constructor() {
+        this.musicGraphData = null;
     }
 
-    console.log(id);
-    console.log(this.musicGraphData.nodes);
+    loadNodeNeighbors(id) {
+        if (!id) {
+            throw "no valid id found";
+        }
 
-    let type = this.musicGraphData.nodeType(this.musicGraphData.nodes[id]['type']);
-    let params = new URLSearchParams();
-    let handler, query, idKey, attachTo, options= {};
-    if (type == MusicArtistTypes.GROUP) {
-        query = queryGroupMembersTpl.replace("$groupName", this.musicGraphData.nodes[id]['label']);
-        idKey = 'artist';
-        attachTo = {id: id, label: 'has_member'};
-    } else /* if (type = MusicArtistTypes.SOLO_ARTIST) */{
-        query = queryArtistIsMemberOfGroupsTpl.replace("$artistName", this.musicGraphData.nodes[id]['label']);
-        attachTo = {id: id, label: 'member_of'};
-        idKey = 'group';
-        // new nodes will be groups
-        options['type_hint'] = 'http://purl.org/ontology/mo/MusicGroup';
-    //  } else {
-    //    throw "not implemented";
+        console.log(id);
+        console.log(this.musicGraphData.nodes);
+
+        let type = this.musicGraphData.nodeType(this.musicGraphData.nodes[id]['type']);
+        let params = new URLSearchParams();
+        let handler, query, idKey, attachTo, options= {};
+        if (type == MusicArtistTypes.GROUP) {
+            // take the correct template and replace the criterium
+            query = queryGroupMembersTpl.replace("$group", this.musicGraphData.nodes[id]['id']);
+            // this field will contain the id in the result set
+            idKey = 'artist';
+            // to which node should the result be attached to
+            attachTo = {id: id, label: 'has_member'};
+        } else /* if (type = MusicArtistTypes.SOLO_ARTIST) */{
+            query = queryArtistIsMemberOfGroupsTpl.replace("$artist", this.musicGraphData.nodes[id]['id']);
+            attachTo = {id: id, label: 'member_of'};
+            idKey = 'group';
+            // new nodes will be groups
+            options['type_hint'] = 'http://purl.org/ontology/mo/MusicGroup';
+        //  } else {
+        //    throw "not implemented";
+        }
+        params.append('query', query);
+        handler = sparqlResponseHandlerCallback(this.musicGraphData, idKey, attachTo, options);
+        axios.post(sparqlEndPoint, params).then(handler);
     }
-    params.append('query', query);
-    handler = sparqlResponseHandlerCallback(this.musicGraphData, idKey, attachTo, options);
-    axios.post(sparqlEndPoint, params).then(handler);
-  }
-
-
 }
 
 getInitGraphData = function(){
