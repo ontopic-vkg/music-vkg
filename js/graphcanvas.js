@@ -97,7 +97,7 @@ class MusicGraphData {
     }
 
     layout() {
-        var layout = this.cy.layout({ name: 'cose' });
+        var layout = this.cy.layout({ name: 'cola' });
         layout.run();
     }
 }
@@ -182,11 +182,10 @@ getInitGraphData = function(){
         ],
       
         layout: {
-          name: 'grid',
-          rows: 2
+          name: 'cola'
         },
-        minZoom: 1e-1,
-        maxZoom: 1e1,
+        minZoom: 1,
+        maxZoom: 1,
         styleEnabled: true  
     }
 }
