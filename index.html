@@ -8,20 +8,20 @@
         <link href="css/mbvkg.css" rel="stylesheet">
     </head>
     <body>
-      <div id="graphcanvas"> </div>
-      <div id="sparqlresult">
-        <h2>From which music artists would you like to start?</h2>
-        <p>Insert the name please</p>
-        <input v-model="artistName">
-        <button v-on:click="loadArtistsSimilarByNameData">Load similarilly named artists</button>
-      <div v-if="artistList.length > 0">
-          <h2>Groups or artists with a name similar to {{ artistName }}</h2>
-            <mb-artist v-on:select-artist="select_artist"
-              v-for="item in artistList" v-bind:key="item.uri"
-              v-bind:artist="item"
-            ></mb-artist>
-      </div>
-    </div>
+        <div id="graphcanvas"> </div>
+        <div id="sparqlresult">
+          <h2>From which music artists would you like to start?</h2>
+          <p>Insert the name please</p>
+          <input v-model="artistName">
+          <button v-on:click="loadArtistsSimilarByNameData">Load similarilly named artists</button>
+          <div v-if="artistList.length > 0">
+              <h2>Groups or artists with a name similar to {{ artistName }}</h2>
+                  <mb-artist v-on:select-artist="select_artist"
+                    v-for="item in artistList" v-bind:key="item.uri"
+                    v-bind:artist="item"
+                  ></mb-artist>
+          </div>
+        </div>
     </body>
     <script src="js/query_templates.js" type="text/javascript"></script>
     <script src="js/sparql_response_handlers.js" type="text/javascript"></script>
