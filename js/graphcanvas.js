@@ -40,24 +40,21 @@ class MusicGraphData {
             this.cy.remove( collection );
             // this.cy.remove();
         } else {
-            console.log("error: no cy found");
+            throw "error: cy not attached";
         }
     }
 
     // 
     add(record, attachTo) {
         let canvasDataList = [];
-        console.log(attachTo);
         let id = record['id'];
         if (!id) {
-            console.log(record);
             throw "no valid id found";
         }
         let type = this.nodeType(record['type']);
 
         // check if node does not already exist
         if(!(id in this.nodes)) {
-            console.log('adding node ' + id);
             this.nodes[id] = record;
 
             // TODO: add label
@@ -73,7 +70,6 @@ class MusicGraphData {
                     }};
             canvasDataList.push(d);
         }
-        console.log("after adding node");
 
         if (attachTo['id']) {
             let relation = {source: attachTo['id'], target:id};
@@ -86,11 +82,8 @@ class MusicGraphData {
             let d = {group: 'edges', data:relation};
             canvasDataList.push(d);
         }
-        console.log(this.nodes);
-        console.log(this.edges);
 
         if (this.cy) {
-            console.log('adding to graph');
             this.cy.add(canvasDataList);
             this.cy.center();
         }
@@ -111,9 +104,6 @@ class MusicGraphSparqlConnector {
         if (!id) {
             throw "no valid id found";
         }
-
-        console.log(id);
-        console.log(this.musicGraphData.nodes);
 
         let type = this.musicGraphData.nodeType(this.musicGraphData.nodes[id]['type']);
         let params = new URLSearchParams();
