@@ -8,7 +8,7 @@ WHERE {
         foaf:name ?artistName ;
         mo:member_of ?group .
     ?group  foaf:name ?groupName .
-    FILTER (?type = mo:MusicArtist && ?groupName="$groupName")
+    FILTER (?type = mo:MusicArtist && ?group=<$group>)
 }`;
 /*
 var querySimilarGroupNamesTpl = `PREFIX mo: <http://purl.org/ontology/mo/>
@@ -43,5 +43,5 @@ WHERE {
     ?artist mo:member_of ?group;
            foaf:name ?artistName.
     ?group foaf:name ?groupName
-    FILTER (?artistName="$artistName")
+    FILTER (?artist = <$artistName>)
 }`;
