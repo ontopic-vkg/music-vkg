@@ -124,6 +124,7 @@ class MusicGraphSparqlConnector {
         //  } else {
         //    throw "not implemented";
         }
+        options.launched_at = Date.now();
         params.append('query', query);
         handler = sparqlResponseHandlerCallback(this.musicGraphData, idKey, attachTo, options);
         axios.post(sparqlEndPoint, params).then(handler);
