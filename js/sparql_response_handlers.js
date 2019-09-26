@@ -21,6 +21,7 @@ function sparqlResponseHandler(currentObj, currList) {
 
 function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options) {
     return function(response) {
+        console.log("in handler " + idKey);
         if (options.launched_at) {
             console.log("query finished executing, elapsed time (ms): " + String(Date.now() - options.launched_at));
         }
@@ -40,6 +41,7 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
                     }
                 }
                 if (id === null) {
+                    console.log(record);
                     throw "no valid id was found as key '" + idKey + "'";
                 } else {
                     if (!('id' in record)) {
@@ -50,7 +52,6 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
                     if (!('type' in record) && ('type_hint' in options)) {
                         record['type'] = options['type_hint'];
                     }                    
-                    console.log(record);
                     data[id] = record;
                 }
 
@@ -59,8 +60,8 @@ function sparqlResponseHandlerCallback(musicGraphData, idKey, attachTo, options)
             if (options.launched_at) {
                 console.log("data added to graph, elapsed time (ms): " + String(Date.now() - options.launched_at));
             }
-                // start to layout the data
-            musicGraphData.layout();
+            // start to layout the data
+            // musicGraphData.layout();
             if (options.launched_at) {
                 console.log("layouting graph finished, elapsed time (ms): " + String(Date.now() - options.launched_at));
             }

@@ -1,7 +1,8 @@
 const MusicArtistTypes = {
     ARTIST: "artist",
     GROUP: "group",
-    SOLO_ARTIST: "solo_artist"
+    SOLO_ARTIST: "solo_artist",
+    TAG: "tag"
 }
 
 class MusicGraphData {
@@ -24,6 +25,8 @@ class MusicGraphData {
             return MusicArtistTypes.SOLO_ARTIST;
         } else if (lastTerm == 'MusicArtist') {
             return MusicArtistTypes.ARTIST;
+        } else if (typeFromSparql == "http://purl.org/muto/core#Tagging"){
+            return MusicArtistTypes.TAG;
         } else {
             throw typeFromSparql + " could not be classified";
         }
@@ -100,34 +103,84 @@ class MusicGraphSparqlConnector {
         this.musicGraphData = null;
     }
 
+    getArtistsFromGoupHandler(id) {
+        // take the correct template and replace the criterium
+        let query = queryGroupMembersTpl.replace("$group", this.musicGraphData.nodes[id]['id']);
+        // this field will contain the id in the result set
+        let artistIdKey = 'artist';
+        // to which node should the result be attached to
+        let attachTo = {id: id, label: 'has_member'};
+        let params = new URLSearchParams();
+        params.append('query', query);
+        console.log(query);
+        let options = {};
+        let handler = sparqlResponseHandlerCallback(this.musicGraphData, artistIdKey, attachTo, options);
+        return [params, handler];
+    }
+
+    getGroupsFromMemberHandler(id) {
+        // take the correct template and replace the criterium
+        let query = queryArtistIsMemberOfGroupsTpl.replace("$artist", this.musicGraphData.nodes[id]['id']);
+        let attachTo = {id: id, label: 'member_of'};
+        let artistIdKey = 'group';
+        // new nodes will be groups
+        let options = {type_hint: 'http://purl.org/ontology/mo/MusicGroup'};
+        let params = new URLSearchParams();
+        params.append('query', query);
+        console.log(query);
+        let handler = sparqlResponseHandlerCallback(this.musicGraphData, artistIdKey, attachTo, options);
+        return [params, handler];
+    }
+
+    getTagsFromArtistHandler(id) {
+        let query = getTagsQueryTpl.replace("$artistType", this.musicGraphData.nodes[id]['type']).replace("$uri", this.musicGraphData.nodes[id]['id']);
+        let params = new URLSearchParams();
+        params.append('query', query);
+        console.log(query);
+        let attachTo = {id: id, label: 'tag'};
+        let options = {};
+        let handler = sparqlResponseHandlerCallback(this.musicGraphData, 'tag', attachTo, options);
+        return [params, handler];
+    }
+
     loadNodeNeighbors(id) {
         if (!id) {
             throw "no valid id found";
         }
 
         let type = this.musicGraphData.nodeType(this.musicGraphData.nodes[id]['type']);
-        let params = new URLSearchParams();
-        let handler, query, idKey, attachTo, options= {};
+        let promise1, promise2;
+        console.log("querying data for type " + type);
         if (type == MusicArtistTypes.GROUP) {
-            // take the correct template and replace the criterium
-            query = queryGroupMembersTpl.replace("$group", this.musicGraphData.nodes[id]['id']);
-            // this field will contain the id in the result set
-            idKey = 'artist';
-            // to which node should the result be attached to
-            attachTo = {id: id, label: 'has_member'};
-        } else /* if (type = MusicArtistTypes.SOLO_ARTIST) */{
-            query = queryArtistIsMemberOfGroupsTpl.replace("$artist", this.musicGraphData.nodes[id]['id']);
-            attachTo = {id: id, label: 'member_of'};
-            idKey = 'group';
-            // new nodes will be groups
-            options['type_hint'] = 'http://purl.org/ontology/mo/MusicGroup';
-        //  } else {
-        //    throw "not implemented";
+            console.log("In group");
+            let [aparams, ahandler] = this.getArtistsFromGoupHandler(id);
+            promise1 = axios.post(sparqlEndPoint, aparams).then(ahandler);
+            let [tparams, thandler] = this.getTagsFromArtistHandler(id);
+            promise2 = axios.post(sparqlEndPoint, tparams).then(thandler);
+        } else if (type == MusicArtistTypes.SOLO_ARTIST || type == MusicArtistTypes.ARTIST) {
+            let [gparams, ghandler] = this.getGroupsFromMemberHandler(id);
+            promise1 = axios.post(sparqlEndPoint, gparams).then(ghandler);
+            let [tparams, thandler] = this.getTagsFromArtistHandler(id);
+            promise2 = axios.post(sparqlEndPoint, tparams).then(thandler);
+        } else if (type == MusicArtistTypes.TAG) {
+            console.log("error: nodes of type " + type + " should not be actionable");
+            return;
+            // let [aparams, ahandler] = this.getGroupMembersHandler(id);
+            // promise1 = axios.post(sparqlEndPoint, aparams).then(ahandler);
+            // let [gparams, ghandler] = this.getGroupOfArtistHandler(id);
+            // promise2 = axios.post(sparqlEndPoint, gparams).then(ghandler);
+        } else {
+            console.log("error: there should be no nodes of type " + type);
+            return;
         }
-        options.launched_at = Date.now();
-        params.append('query', query);
-        handler = sparqlResponseHandlerCallback(this.musicGraphData, idKey, attachTo, options);
-        axios.post(sparqlEndPoint, params).then(handler);
+        // options.launched_at = Date.now();
+
+        let mgd = this.musicGraphData;
+        Promise.all([promise1, promise2]).then(function(r1, r2) {
+            console.log('In callback: relayout the graph');
+            // start to layout the data
+            mgd.layout();
+        });
     }
 }
 
@@ -148,16 +201,34 @@ getInitGraphData = function(){
               'font-size': '12px',
               'text-halign': 'center',
               'text-valign': 'center'
+//              'text-margin-x': '10px'
             }
           },
-      
+
           // groups are green
           {
             selector: 'node[type="group"]',
             style: {
-              'background-color': '#8F8',
+              'background-color': '#80F080',
             }
           },
+      
+          // artists are blue
+          {
+            selector: 'node[type="artist"]',
+            style: {
+              'background-color': '#80D7F0',
+            }
+          },
+
+          // tags are yellow
+          {
+            selector: 'node[type="tag"]',
+            style: {
+              'background-color': '#eaef72',
+            }
+          },
+
           {
             selector: 'edge',
             style: {
