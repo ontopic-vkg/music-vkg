@@ -10,9 +10,13 @@
     </head>
     <body>
         <div id="sparqlresult" width="100%">
-          <span class="search-label">From which music artists would you like to start?</span>
-          <input v-model="artistName">
-          <button v-on:click="loadArtistsSimilarByNameData" :disabled="artistName==''">Load similarilly named artists</button>
+          <div id="top-row">
+              <span class="search-label">From which music artists would you like to start?</span>
+              <input v-model="artistName">
+          <button class="submit" v-on:click="loadArtistsSimilarByNameData" :disabled="artistName==''">Load similarilly named artists</button>
+          <span class="logo-musicbrainz"><img src="img/MusicBrainz_logo.png"></span>
+          </div>
+
           <div v-if="artistList.length > 0">
                   <mb-artist v-on:select-artist="select_artist"
                     v-for="item in artistList" v-bind:key="item.uri"
