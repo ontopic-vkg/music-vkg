@@ -1,5 +1,9 @@
+body {
+    font-family: 'Source Sans Pro', serif;
+}
+
 #graphcanvas {
-    width: 1000px;
+    width: 100%;
     height: 600px;
     background-color: #fff;
     display: block;
@@ -33,4 +37,12 @@ button {
 
 #similar-artists button .musicgroup {
     background-color: olivedrab;
+}
+
+.search-label {
+    font-weight: bold;
+}
+
+.found-artist {
+    background-color: #eaef72;
 }

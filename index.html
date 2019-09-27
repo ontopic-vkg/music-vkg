@@ -4,22 +4,23 @@
         <meta charset="UTF-8">
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <link href="css/mbvkg.css" rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+
     </head>
     <body>
-        <div id="graphcanvas"> </div>
-        <div id="sparqlresult">
-          <h2>From which music artists would you like to start?</h2>
-          <p>Insert the name please</p>
+        <div id="sparqlresult" width="100%">
+          <span class="search-label">From which music artists would you like to start?</span>
           <input v-model="artistName">
           <button v-on:click="loadArtistsSimilarByNameData" :disabled="artistName==''">Load similarilly named artists</button>
           <div v-if="artistList.length > 0">
-              <h2>Groups or artists with a name similar to {{ artistName }}</h2>
                   <mb-artist v-on:select-artist="select_artist"
                     v-for="item in artistList" v-bind:key="item.uri"
                     v-bind:artist="item"
                   ></mb-artist>
           </div>
         </div>
+        <div id="graphcanvas"> </div>
     </body>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 Vue.component('mb-artist', {
   props: ['artist'],
-  template: '<button v-on:click="$emit(\'select-artist\', artist.uri)" v-bind:class="/MusicGroup/.test(artist.type)?\'musicgroup\':\'soloartist\'">{{ artist.name }} ({{/MusicGroup/.test(artist.type)?\'group\':\'solo artist\'}})</button>'
+  template: '<button class="found-artist" v-on:click="$emit(\'select-artist\', artist.uri)" v-bind:class="/MusicGroup/.test(artist.type)?\'musicgroup\':\'soloartist\'">{{ artist.name }} ({{/MusicGroup/.test(artist.type)?\'group\':\'solo artist\'}})</button>'
 })
 
 var MbApp = new Vue({
