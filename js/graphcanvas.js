@@ -199,9 +199,14 @@ getInitGraphData = function(){
               'width': 'label',
               'height': 'label',
               'font-size': '12px',
+              'text-background-opacity': 1,
+              'color': '#000',
+              'text-background-color': '#888',
+              'text-background-shape': 'roundrectangle',
+              'text-background-opacity': 1, //              'text-margin-x': '10px'
+              'text-background-padding': '3px',
               'text-halign': 'center',
               'text-valign': 'center'
-//              'text-margin-x': '10px'
             }
           },
 
@@ -210,6 +215,7 @@ getInitGraphData = function(){
             selector: 'node[type="group"]',
             style: {
               'background-color': '#80F080',
+              'text-background-color': '#80F080'
             }
           },
       
@@ -218,6 +224,7 @@ getInitGraphData = function(){
             selector: 'node[type="artist"]',
             style: {
               'background-color': '#80D7F0',
+              'text-background-color': '#80D7F0'
             }
           },
 
@@ -226,16 +233,17 @@ getInitGraphData = function(){
             selector: 'node[type="tag"]',
             style: {
               'background-color': '#eaef72',
+              'text-background-color': '#eaef72'
             }
           },
 
           {
             selector: 'edge',
             style: {
-              'width': 2,
-              'line-color': '#fcc',
+              'width': 1,
+              'line-color': '#aaa',
               'curve-style': 'bezier',
-              'target-arrow-color': '#fcc',
+              'target-arrow-color': '#aaa',
               'target-arrow-shape': 'vee',
               'label': 'data(label)',
               'font-size': '12px',
