@@ -198,7 +198,7 @@ getInitGraphData = function(){
               'shape': 'rectangle',
               'width': 'label',
               'height': 'label',
-              'font-size': '12px',
+              'font-size': '20px',
               'text-background-opacity': 1,
               'color': '#000',
               'text-background-color': '#888',
