@@ -22,7 +22,7 @@ class MusicGraphData {
         if (lastTerm == 'MusicGroup') {
             return MusicArtistTypes.GROUP;
         } else if (lastTerm == 'SoloMusicArtist') {
-            return MusicArtistTypes.SOLO_ARTIST;
+            return MusicArtistTypes.ARTIST;
         } else if (lastTerm == 'MusicArtist') {
             return MusicArtistTypes.ARTIST;
         } else if (typeFromSparql == "http://purl.org/muto/core#Tagging"){
