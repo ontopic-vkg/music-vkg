@@ -116,7 +116,6 @@ class MusicGraphSparqlConnector {
         let attachTo = {id: id, label: 'has_member'};
         let params = new URLSearchParams();
         params.append('query', query);
-        console.log(query);
         let options = {};
         let handler = sparqlResponseHandlerCallback(this.musicGraphData, artistIdKey, attachTo, options);
         return [params, handler];
@@ -131,7 +130,6 @@ class MusicGraphSparqlConnector {
         let options = {type_hint: 'http://purl.org/ontology/mo/MusicGroup'};
         let params = new URLSearchParams();
         params.append('query', query);
-        console.log(query);
         let handler = sparqlResponseHandlerCallback(this.musicGraphData, artistIdKey, attachTo, options);
         return [params, handler];
     }
@@ -140,7 +138,6 @@ class MusicGraphSparqlConnector {
         let query = getTagsQueryTpl.replace("$artistType", this.musicGraphData.nodes[id]['type']).replace("$uri", this.musicGraphData.nodes[id]['id']);
         let params = new URLSearchParams();
         params.append('query', query);
-        console.log(query);
         let attachTo = {id: id, label: 'tag'};
         let options = {};
         let handler = sparqlResponseHandlerCallback(this.musicGraphData, 'tag', attachTo, options);
@@ -155,9 +152,7 @@ class MusicGraphSparqlConnector {
 
         let type = this.musicGraphData.nodeType(this.musicGraphData.nodes[id]['type']);
         let promise1, promise2;
-        console.log("querying data for type " + type);
         if (type == MusicArtistTypes.GROUP) {
-            console.log("In group");
             let [aparams, ahandler] = this.getArtistsFromGoupHandler(id);
             promise1 = axios.post(sparqlEndPoint, aparams).then(ahandler);
             let [tparams, thandler] = this.getTagsFromArtistHandler(id);
@@ -182,7 +177,6 @@ class MusicGraphSparqlConnector {
 
         let mgd = this.musicGraphData;
         Promise.all([promise1, promise2]).then(function(r1, r2) {
-            console.log('In callback: relayout the graph');
             // start to layout the data
             mgd.layout();
         });
