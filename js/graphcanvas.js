@@ -47,7 +47,7 @@ class MusicGraphData {
         }
     }
 
-    // 
+    // add a new node to the graph
     add(record, attachTo) {
         let canvasDataList = [];
         let id = record['id'];
@@ -75,15 +75,19 @@ class MusicGraphData {
         }
 
         if (attachTo['id']) {
-            let relation = {source: attachTo['id'], target:id};
-            if (attachTo['label']) {
-                relation['label'] = attachTo['label'];
-            } else {
-              relation['label'] = "no relation set";
+            let key = (attachTo['id']).toString() + '-' + id.toString();
+            if (!(key in this.edges)) {
+                  // TODO: finish this!
+                let relation = {source: attachTo['id'], target:id};
+                if (attachTo['label']) {
+                    relation['label'] = attachTo['label'];
+                } else {
+                  relation['label'] = "unknown relation";
+                }
+                this.edges[key] = relation;
+                let d = {group: 'edges', data:relation};
+                canvasDataList.push(d);
             }
-            this.edges.push(relation);
-            let d = {group: 'edges', data:relation};
-            canvasDataList.push(d);
         }
 
         if (this.cy) {
@@ -143,6 +147,7 @@ class MusicGraphSparqlConnector {
         return [params, handler];
     }
 
+    // callback function for loading data from sparql endpoint
     loadNodeNeighbors(id) {
         if (!id) {
             throw "no valid id found";
