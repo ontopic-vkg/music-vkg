@@ -2,11 +2,11 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-        <link href="css/mbvkg.css" rel="stylesheet">
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
-
+        <!--
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+        -->
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="css/mbvkg.css">
     </head>
     <body>
         <div id="sparqlresult" width="100%">
@@ -28,17 +28,21 @@
         </div>
         <div id="graphcanvas"> </div>
     </body>
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-    <!-- <script src="js/cytoscape.min.js"></script> -->
-    <script src="js/cola.v3.min.js"></script>
-    <!-- <script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>  -->
-    <script src="js/cytoscape-cola.js"></script>
+    <script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>
+  -->
+    <script src="js/ext/vue.js"></script>
+    <script src="js/ext/axios.min.js"></script>
+    <script src="js/ext/cytoscape.min.js"></script>
+    <script src="js/ext/cola.v3.min.js"></script>
+    <script src="js/ext/cytoscape-cola.js"></script>
     <script src="js/query_templates.js" type="text/javascript"></script>
     <script src="js/sparql_response_handlers.js" type="text/javascript"></script>
     <script src="js/utils.js" type="text/javascript"></script>
     <script src="js/graphcanvas.js" type="text/javascript"></script>
-
     <script>
 
 var sparqlEndPoint = 'http://127.0.0.1:8080/sparql';
@@ -48,6 +52,7 @@ var musicGraphConnector;
 
 // init the graph
 document.addEventListener('DOMContentLoaded', function() {
+    // TODO: init graph after initial node was chosen
     let cy = window.cy = cytoscape(getInitGraphData());
     musicGraph = new MusicGraphData();
     musicGraph.cy = cy;
@@ -114,6 +119,7 @@ var MbApp = new Vue({
         params.append('query', similarGroupsQuery);
 
         let getArtistsHandler = sparqlResponseHandler(this, 'artistList');
+        // TODO: init graph after initial node was chosen
         axios.post(sparqlEndPoint, params).then(getArtistsHandler);
     }
   }
