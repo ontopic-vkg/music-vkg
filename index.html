@@ -52,20 +52,6 @@ var musicGraphConnector;
 
 // init the graph
 document.addEventListener('DOMContentLoaded', function() {
-    // TODO: init graph after initial node was chosen    
-    musicGraph = new MusicGraphData();
-    musicGraph.cy =  cytoscape(getInitGraphData('graphcanvas'));
-    musicGraphConnector = new MusicGraphSparqlConnector();
-    musicGraphConnector.musicGraphData = musicGraph;
-
-    musicGraph.cy.on('click', 'node[type="artist"]', function(evt){
-        var node = evt.target;
-        musicGraphConnector.loadNodeNeighbors(node.id());
-    });
-    musicGraph.cy.on('click', 'node[type="group"]', function(evt){
-        var node = evt.target;
-        musicGraphConnector.loadNodeNeighbors(node.id());
-    });
 });
 
 Vue.component('mb-artist', {
@@ -95,6 +81,22 @@ var MbApp = new Vue({
             throw "Could not find an array with key 'uri' and with value " + uri + " in data array artistList";
         }
 
+        // The graph is initialized only when the the artist is selected.
+        // this avoids that cytoscape gets confused about the position of
+        // the div
+        musicGraph = new MusicGraphData();
+        musicGraph.cy =  cytoscape(getInitGraphData('graphcanvas'));
+        musicGraphConnector = new MusicGraphSparqlConnector();
+        musicGraphConnector.musicGraphData = musicGraph;
+
+        musicGraph.cy.on('click', 'node[type="artist"]', function(evt){
+            var node = evt.target;
+            musicGraphConnector.loadNodeNeighbors(node.id());
+        });
+        musicGraph.cy.on('click', 'node[type="group"]', function(evt){
+            var node = evt.target;
+            musicGraphConnector.loadNodeNeighbors(node.id());
+        });
         let artistType = musicGraph.nodeType(this.artist.type);
         // add node to graph
         let startingNode = this.artist;
