@@ -183,9 +183,9 @@ class MusicGraphSparqlConnector {
     }
 }
 
-getInitGraphData = function(){
+getInitGraphData = function(el){
     return  {
-        container: document.getElementById('graphcanvas'), // container to render in
+        container: document.getElementById(el), // container to render in
         elements: [],
       
         style: [{
