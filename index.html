@@ -52,10 +52,9 @@ var musicGraphConnector;
 
 // init the graph
 document.addEventListener('DOMContentLoaded', function() {
-    // TODO: init graph after initial node was chosen
-    let cy = window.cy = cytoscape(getInitGraphData('graphcanvas'));
+    // TODO: init graph after initial node was chosen    
     musicGraph = new MusicGraphData();
-    musicGraph.cy = cy;
+    musicGraph.cy =  cytoscape(getInitGraphData('graphcanvas'));
     musicGraphConnector = new MusicGraphSparqlConnector();
     musicGraphConnector.musicGraphData = musicGraph;
 
